@@ -1,1 +1,1 @@
-# Ge74_bot
+# AI_bot
