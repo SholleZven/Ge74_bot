@@ -28,7 +28,7 @@ log_file = "bot_log.log"
 
 # Создаем папку для логов, если её нет
 if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
+    os.makedirs(log_directory, mode=0o777, exist_ok=True)
 
 # Настройка логирования в файл
 log_path = os.path.join(log_directory, log_file)
@@ -110,7 +110,7 @@ async def generate_answer(question, context):
         chat_response = client.chat.complete(
             model=model_chat,
             messages=[
-                {"role": "system", "content": "Пожалуйста, отвечай на вопросы на русском языке."},
+                {"role": "system", "content": "Пожалуйста, отвечай на вопросы на русском языке. Пожалуйста отвечай на вопросы строго как написано на сайте ge74"},
                 {"role": "user", "content": f"Вопрос: {question}. Контекст: {context}"}
             ],
 
@@ -128,7 +128,7 @@ async def send_welcome(message: types.Message):
     """
     Обработчик команды /start.
     
-    :param message: Сообщение пользователя
+    :param message: Сообщение пользователяф
     """
     welcome_text = (
         "Привет! Я бот, который поможет ответить на ваши вопросы.\n"
