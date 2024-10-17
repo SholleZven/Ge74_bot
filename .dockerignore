@@ -2,3 +2,4 @@ venv
 logs
 .env
 supervisor_logs
+.git

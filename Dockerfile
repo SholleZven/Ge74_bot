@@ -9,7 +9,7 @@ COPY requirements.txt .
 
 # Устанавливаем зависимости
 # RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --root-user-action=ignore -r requirements.txt
 
 # Копируем все файлы проекта в рабочую директорию контейнера
 COPY . .
