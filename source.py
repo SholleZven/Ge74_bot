@@ -7,6 +7,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
 from dotenv import load_dotenv
 from mistralai import Mistral  # Импортируем клиентскую библиотеку Mistral
+from pathlib import Path
 
 # Очистка кэша запросов
 requests_cache.clear()
@@ -22,22 +23,15 @@ MISTRAL_API_KEY = os.getenv('MISTRAL_AI_API_KEY')
 if not API_TOKEN or not MISTRAL_API_KEY:
     raise ValueError("Необходимо задать TELEGRAM_BOT_TOKEN и MISTRAL_AI_API_KEY в .env файле")
 
-# Настройка папки и файла для логирования
-log_directory = "logs"
-log_file = "bot_log.log"
+# Задаем директорию для логов
+log_directory = Path("logs")
 
-# Создаем папку для логов, если её нет
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory, mode=0o777, exist_ok=True)
+# Создаем директорию, если она не существует
+log_directory.mkdir(parents=True, exist_ok=True)
 
-# Настройка логирования в файл
-log_path = os.path.join(log_directory, log_file)
-logging.basicConfig(
-    filename=log_path,
-    filemode='a',  # 'a' означает, что логи будут дописываться в файл, а не перезаписываться
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+# Настройка логирования
+log_file = log_directory / "bot_log.log"
+logging.basicConfig(filename=log_file, level=logging.INFO)
 
 # Логирование начала работы
 logging.info("Запуск бота")
@@ -110,7 +104,7 @@ async def generate_answer(question, context):
         chat_response = client.chat.complete(
             model=model_chat,
             messages=[
-                {"role": "system", "content": "Пожалуйста, отвечай на вопросы на русском языке. Пожалуйста отвечай на вопросы строго как написано на сайте ge74"},
+                {"role": "system", "content": "Пожалуйста, отвечай на вопросы на русском языке."},
                 {"role": "user", "content": f"Вопрос: {question}. Контекст: {context}"}
             ],
 
