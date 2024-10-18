@@ -51,7 +51,7 @@ URL_LIST = [
 
 async def parse_site(url):
     """
-    Асинхронная функция для парсинга указанного веб-сайта и извлечения контента.
+    Асинхронная функция для парсинга указанного веб-сайта и извлечения контента со всех возможных тегов.
     
     :param url: URL сайта для парсинга
     :return: Контент страницы
@@ -63,16 +63,15 @@ async def parse_site(url):
         logging.error(f"Ошибка при запросе к {url}: {e}")
         return f"Не удалось получить данные с сайта {url}."
     
+    # Парсим содержимое страницы с помощью BeautifulSoup
     soup = BeautifulSoup(response.text, 'html.parser')
-
-    # Извлечение всех абзацев
-    paragraphs = soup.find_all('p')
-    if not paragraphs:
-        logging.warning(f"Не найдены абзацы на странице {url}.")
-        return f"Не удалось найти нужную информацию на сайте {url}."
     
-    # Сбор текста из всех абзацев
-    text_content = ' '.join([p.get_text(strip=True) for p in paragraphs])
+    # Извлечение текста со страницы
+    text_content = soup.get_text(separator=' ', strip=True)  # Извлекает текст из всех тегов
+    
+    if not text_content.strip():  # Проверка, есть ли какой-либо текст
+        logging.warning(f"Текст не найден на странице {url}.")
+        return f"Не удалось найти нужную информацию на сайте {url}."
     
     return text_content
 
@@ -107,7 +106,6 @@ async def generate_answer(question, context):
                 {"role": "system", "content": "Пожалуйста, отвечай на вопросы на русском языке."},
                 {"role": "user", "content": f"Вопрос: {question}. Контекст: {context}"}
             ],
-
             temperature=0
         )
         answer = chat_response.choices[0].message.content  # Извлечение ответа из ответа API
@@ -122,7 +120,7 @@ async def send_welcome(message: types.Message):
     """
     Обработчик команды /start.
     
-    :param message: Сообщение пользователяф
+    :param message: Сообщение пользователя
     """
     welcome_text = (
         "Привет! Я бот, который поможет ответить на ваши вопросы.\n"
